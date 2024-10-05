@@ -48,8 +48,18 @@ class Article
         return "https://ru.wikipedia.org/wiki/" . $this->title;
     }
 
+    public function getWordCount(): int
+    {
+        return $this->wordsAtoms->count();
+    }
+
+    public function getSize(): int
+    {
+        return mb_strlen($this->content, 'UTF-8');
+    }
+
     private function parseContentIntoWordsAtoms(): Collection
     {
-        //
+        return collect(preg_split('/[^а-яёА-ЯЁ0-9a-zA-Z]+/u', mb_strtolower($this->content), -1, PREG_SPLIT_NO_EMPTY));
     }
 }

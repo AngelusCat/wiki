@@ -35,7 +35,7 @@ class MediaWikiAPI
     private function getPlainTextFromResponse(Collection $response): ?string
     {
         return $response->first(function ($value, $key) {
-            return str_ends_with($key, "extract");
+            return str_ends_with($key, "extract") && !empty($value);
         });
     }
 }

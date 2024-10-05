@@ -22,7 +22,7 @@ class Words
         $alreadyThereWords = $alreadyThere->map(function ($item) {
             return $item->word;
         });
-        $notYet = $alreadyThereWords->diff($words);
+        $notYet = $words->diff($alreadyThereWords);
         $forInsert = $notYet->map(function ($item) {
             return ["word" => $item];
         });

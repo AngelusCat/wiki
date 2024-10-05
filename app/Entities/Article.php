@@ -2,6 +2,7 @@
 
 namespace App\Entities;
 
+use App\Services\TDGs\WordArticle;
 use App\Services\TDGs\Words;
 use App\Services\WordsAtomsTDG;
 use Illuminate\Support\Collection;
@@ -14,14 +15,18 @@ class Article
     private string $content;
     private \App\Services\TDGs\Articles $articlesTdg;
     private Words $wordsTdg;
+    private WordArticle $wordArticleTdg;
+    private Collection $numberOfOccurrences;
 
     public function __construct(string $title, string $content, Collection $words = new Collection())
     {
         $this->articlesTdg = app(\App\Services\TDGs\Articles::class);
         $this->wordsTdg = app(\App\Services\TDGs\Words::class);
+        $this->wordArticleTdg = app(\App\Services\TDGs\WordArticle::class);
         $this->title = $title;
         $this->content = $this->removeAccents($content);
         $this->words = ($words->isEmpty()) ? $this->parseContentIntoWords() : $words;
+        $this->numberOfOccurrences = $this->words->countBy();
     }
 
     private function removeAccents(string $content): string
@@ -74,10 +79,20 @@ class Article
         return $this->words->uniqueStrict();
     }
 
+    public function getNumberOfOccurrencesOfWord(string $word): int
+    {
+        return $this->numberOfOccurrences->get($word);
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function save(): void
     {
         $this->id = $this->articlesTdg->save($this->title, $this->content);
         $wordsIds = $this->wordsTdg->massSave($this->getUniqueWords());
-        dump($wordsIds);
+        $this->wordArticleTdg->save($this, $wordsIds);
     }
 }

@@ -12,18 +12,22 @@ class Words
     public function massSave(Collection $words): Collection
     {
         $alreadyThere = DB::table($this->tableName)->whereIn('word', $words)->get();
+        if ($alreadyThere->isEmpty()) {
+            $forInsert = $words->map(function ($item) {
+                return ["word" => $item];
+            });
+            DB::table($this->tableName)->insert($forInsert->toArray());
+            return DB::table($this->tableName)->whereIn('word', $words)->get();
+        }
         $alreadyThereWords = $alreadyThere->map(function ($item) {
             return $item->word;
-        });
-        $alreadyThereIds = $alreadyThere->map(function ($item) {
-            return $item->id;
         });
         $notYet = $alreadyThereWords->diff($words);
         $forInsert = $notYet->map(function ($item) {
             return ["word" => $item];
         });
         DB::table($this->tableName)->insert($forInsert->toArray());
-        $otherIds = DB::table($this->tableName)->whereIn('word', $notYet)->get();
-        return $alreadyThereIds->merge($otherIds);
+        $other = DB::table($this->tableName)->whereIn('word', $notYet)->get();
+        return $alreadyThere->merge($other);
     }
 }

@@ -7,14 +7,17 @@ use Illuminate\Support\Collection;
 
 class Article
 {
+    private ?int $id;
     private string $title;
-    private Collection $wordsAtoms;
+    private Collection $words;
     private string $content;
+    private \App\Services\TDGs\Articles $articleTdg;
 
-    public function __construct(string $title, string $content, Collection $wordsAtoms = new Collection())
+    public function __construct(string $title, string $content, Collection $words = new Collection())
     {
+        $this->articleTdg = app(\App\Services\TDGs\Articles::class);
         $this->title = $title;
-        $this->wordsAtoms = ($wordsAtoms->isEmpty()) ? $this->parseContentIntoWordsAtoms() : $wordsAtoms;
+        $this->words = ($words->isEmpty()) ? $this->parseContentIntoWords() : $words;
         $this->content = $this->removeAccents($content);
     }
 
@@ -50,7 +53,7 @@ class Article
 
     public function getWordCount(): int
     {
-        return $this->wordsAtoms->count();
+        return $this->words->count();
     }
 
     public function getSize(): int
@@ -58,8 +61,18 @@ class Article
         return mb_strlen($this->content, 'UTF-8');
     }
 
-    private function parseContentIntoWordsAtoms(): Collection
+    private function parseContentIntoWords(): Collection
     {
         return collect(preg_split('/[^а-яёА-ЯЁ0-9a-zA-Z]+/u', mb_strtolower($this->content), -1, PREG_SPLIT_NO_EMPTY));
+    }
+
+    private function getUniqueWords(): Collection
+    {
+        return $this->words->uniqueStrict();
+    }
+
+    public function save(): void
+    {
+        $this->id = $this->articleTdg->save($this->title, $this->content);
     }
 }

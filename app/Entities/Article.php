@@ -17,8 +17,8 @@ class Article
     {
         $this->articleTdg = app(\App\Services\TDGs\Articles::class);
         $this->title = $title;
-        $this->words = ($words->isEmpty()) ? $this->parseContentIntoWords() : $words;
         $this->content = $this->removeAccents($content);
+        $this->words = ($words->isEmpty()) ? $this->parseContentIntoWords() : $words;
     }
 
     private function removeAccents(string $content): string

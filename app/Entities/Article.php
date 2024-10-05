@@ -2,6 +2,7 @@
 
 namespace App\Entities;
 
+use App\Services\TDGs\Words;
 use App\Services\WordsAtomsTDG;
 use Illuminate\Support\Collection;
 
@@ -11,11 +12,13 @@ class Article
     private string $title;
     private Collection $words;
     private string $content;
-    private \App\Services\TDGs\Articles $articleTdg;
+    private \App\Services\TDGs\Articles $articlesTdg;
+    private Words $wordsTdg;
 
     public function __construct(string $title, string $content, Collection $words = new Collection())
     {
-        $this->articleTdg = app(\App\Services\TDGs\Articles::class);
+        $this->articlesTdg = app(\App\Services\TDGs\Articles::class);
+        $this->wordsTdg = app(\App\Services\TDGs\Words::class);
         $this->title = $title;
         $this->content = $this->removeAccents($content);
         $this->words = ($words->isEmpty()) ? $this->parseContentIntoWords() : $words;
@@ -73,6 +76,8 @@ class Article
 
     public function save(): void
     {
-        $this->id = $this->articleTdg->save($this->title, $this->content);
+        $this->id = $this->articlesTdg->save($this->title, $this->content);
+        $wordsIds = $this->wordsTdg->massSave($this->getUniqueWords());
+        dump($wordsIds);
     }
 }

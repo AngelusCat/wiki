@@ -28,7 +28,7 @@ class Words
         });
         DB::table($this->tableName)->insert($forInsert->toArray());
         $other = DB::table($this->tableName)->whereIn('word', $notYet)->get();
-        return $alreadyThere->merge($other);
+        return $alreadyThere->toBase()->merge($other);
     }
 
     public function getIdByWord(string $word): int

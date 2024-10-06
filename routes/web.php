@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\WikiParserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('wiki');
+    $csrfToken = csrf_token();
+    return view('wiki')->with('csrfToken', $csrfToken);
 });
+
+Route::post('/import', [WikiParserController::class, 'import']);

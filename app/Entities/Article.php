@@ -53,6 +53,10 @@ class Article
         ];
         return strtr($content, $replacementArray);
     }
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
 
     public function getLink(): string
     {
@@ -79,9 +83,9 @@ class Article
         return $this->words->uniqueStrict();
     }
 
-    public function getNumberOfOccurrencesOfWord(string $word): int
+    public function getNumberOfOccurrencesOfWord(string $word): int|null
     {
-        return $this->numberOfOccurrences->get($word);
+        return ($this->numberOfOccurrences->has($word)) ? $this->numberOfOccurrences[$word] : null;
     }
 
     public function getId(): int

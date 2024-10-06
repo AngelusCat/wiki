@@ -6,6 +6,7 @@ use App\Entities\Article;
 use App\Services\MediaWikiAPI;
 use App\Services\TDGs\WordArticle;
 use App\Services\TDGs\Words;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,10 +16,11 @@ class WikiParserController extends Controller
     public function import(Request $request)
     {
         //validation
+        $start = microtime(true);
         $title = $request->input('title');
         $content = $this->api->getPlainTextOfArticle($title);
         if ($content === null) {
-            //redirect
+            //
         }
         $article = new Article($title, $content);
         try {
@@ -27,8 +29,18 @@ class WikiParserController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            //редирект
+            throw $e;
         }
+
+        $processingTime = round(microtime(true) - $start, 4);
+
+        return response()->json([
+            "title" => $article->getTitle(),
+            "link" => $article->getLink(),
+            "size" => $article->getSize(),
+            "wordCount" => $article->getWordCount(),
+            "processingTime" => $processingTime
+        ]);
     }
 
     public function search(Request $request)

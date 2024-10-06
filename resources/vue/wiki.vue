@@ -37,6 +37,7 @@
             <input type="hidden" name="_token" :value="props.csrfToken">
             <input type="text" name="title" placeholder="ключевое слово">
             <button type="submit">Скопировать</button>
+            <button type="reset">Очистить</button>
         </form>
         <div v-if="articleShow">
             <p>Импорт завершен.</p>

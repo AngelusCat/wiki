@@ -23,12 +23,15 @@ class Words
             return $item->word;
         });
         $notYet = $words->diff($alreadyThereWords);
+        if ($notYet->isEmpty()) {
+            return $alreadyThere;
+        }
         $forInsert = $notYet->map(function ($item) {
             return ["word" => $item];
         });
         DB::table($this->tableName)->insert($forInsert->toArray());
         $other = DB::table($this->tableName)->whereIn('word', $notYet)->get();
-        return $alreadyThere->toBase()->merge($other);
+        return $alreadyThere->merge($other);
     }
 
     public function getIdByWord(string $word): int

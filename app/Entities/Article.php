@@ -49,7 +49,9 @@ class Article
             "Ю́" => "Ю",
             "ю́" => "ю",
             "Я́" => "Я",
-            "я́" => "я"
+            "я́" => "я",
+            "Ё" => "Е",
+            "ё" => "е"
         ];
         return strtr($content, $replacementArray);
     }
@@ -83,9 +85,9 @@ class Article
         return $this->words->uniqueStrict();
     }
 
-    public function getNumberOfOccurrencesOfWord(string $word): int|null
+    public function getNumberOfOccurrencesOfWord(string $word): int
     {
-        return ($this->numberOfOccurrences->has($word)) ? $this->numberOfOccurrences[$word] : null;
+        return $this->numberOfOccurrences->get($word);
     }
 
     public function getId(): int

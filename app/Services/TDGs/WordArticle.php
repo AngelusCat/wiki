@@ -13,9 +13,6 @@ class WordArticle
     public function massSave(Article $article, Collection $wordsIds): void
     {
         $forInsert = $wordsIds->map(function ($item) use ($article) {
-            if ($article->getNumberOfOccurrencesOfWord($item->word) === null) {
-                throw new \Exception("Слово: $item->word");
-            }
             return ["article_id" => $article->getId(), "word_id" => $item->id, "number_of_occurrences" => $article->getNumberOfOccurrencesOfWord($item->word)];
         });
         DB::table($this->tableName)->insert($forInsert->toArray());

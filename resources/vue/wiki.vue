@@ -2,11 +2,40 @@
     import {ref} from "vue";
 
     let props = defineProps(["csrfToken"]);
+
     let importShow = ref(true);
     let searchShow = ref(false);
     let articleShow = ref(false);
+
     let article = ref({});
-    let articles = ref([]);
+    let articles = ref({});
+
+    let start = 1;
+    let end = 10;
+
+    async function test()
+    {
+        let result = await fetch("http://wiki/articles/" + start + "/" + end);
+        articles.value = await result.json();
+    }
+
+    test();
+
+    async function nextPage()
+    {
+        start = end + 1;
+        end = end + 10;
+        let result = await fetch("http://wiki/articles/" + start + "/" + end);
+        articles.value = await result.json();
+    }
+
+    async function lastPage()
+    {
+        end = end - 10;
+        start = end - 9;
+        let result = await fetch("http://wiki/articles/" + start + "/" + end);
+        articles.value = await result.json();
+    }
 
     function changeVisibility()
     {
@@ -24,7 +53,6 @@
         article.value = await response.json();
         if (Object.keys(article).length !== 0) {
             articleShow.value = true;
-            articles.value.push(article.value);
         }
     }
 </script>
@@ -62,6 +90,8 @@
                     <td>{{ article.wordCount }}</td>
                 </tr>
             </table>
+            <button @click="lastPage">Предыдущая страница</button>
+            <button @click="nextPage">Следующая страница</button>
         </div>
     </div>
     <div v-if="searchShow">

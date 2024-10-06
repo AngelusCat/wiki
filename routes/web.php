@@ -35,9 +35,13 @@ Route::get('/articles/{start}/{end}', function (int $start, int $end) {
     $f = app(\App\Services\Factories\Article::class);
     $articles = $tdg->getArticles($start, $end);
 
+    $articles1 = [];
+
     foreach ($articles as $article) {
         $articles1[] = $f->createByDB($article->id);
     }
+
+    $response = [];
 
     foreach ($articles1 as $article) {
         $response[] = [
@@ -47,12 +51,5 @@ Route::get('/articles/{start}/{end}', function (int $start, int $end) {
             "wordCount" => $article->getWordCount()
         ];
     }
-
-    if (!isset($response)) {
-        return response()->json([
-            "message" => "No articles found"
-        ]);
-    }
-
     return response()->json($response);
 });

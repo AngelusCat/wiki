@@ -13,28 +13,40 @@
     let start = 1;
     let end = 10;
 
-    async function test()
-    {
-        let result = await fetch("http://wiki/articles/" + start + "/" + end);
-        articles.value = await result.json();
-    }
 
-    test();
+
+    async function init()
+    {
+        let response = await fetch("http://wiki/articles/" + start + "/" + end);
+        articles.value = await response.json();
+    }
+    init();
 
     async function nextPage()
     {
         start = end + 1;
         end = end + 10;
-        let result = await fetch("http://wiki/articles/" + start + "/" + end);
-        articles.value = await result.json();
+        let response = await fetch("http://wiki/articles/" + start + "/" + end);
+
+        let body = await response.json();
+        if (body.length === 0) {
+            end = end - 10;
+            start = end - 9;
+        } else {
+            articles.value = body;
+        }
     }
 
     async function lastPage()
     {
         end = end - 10;
         start = end - 9;
-        let result = await fetch("http://wiki/articles/" + start + "/" + end);
-        articles.value = await result.json();
+        if (start <= 0) {
+            start = end + 1;
+            end = end + 10;
+        }
+        let response = await fetch("http://wiki/articles/" + start + "/" + end);
+        articles.value = await response.json();
     }
 
     function changeVisibility()

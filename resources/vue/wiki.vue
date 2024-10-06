@@ -5,7 +5,8 @@
     let importShow = ref(true);
     let searchShow = ref(false);
     let articleShow = ref(false);
-    let article = ref();
+    let article = ref({});
+    let articles = ref([]);
     function changeVisibility()
     {
         importShow.value = !importShow.value;
@@ -22,6 +23,7 @@
         article.value = await response.json();
         if (Object.keys(article).length !== 0) {
             articleShow.value = true;
+            articles.value.push(article.value);
         }
     }
 </script>
@@ -42,6 +44,22 @@
             <p>Время обработки: {{ article.processingTime + " с."}}</p>
             <p>Размер статьи: {{ article.size + " б."}}</p>
             <p>Количество слов: {{ article.wordCount }}</p>
+        </div>
+        <div v-if="articles.length !== 0">
+            <table border>
+                <tr>
+                    <td>Название статьи</td>
+                    <td>Ссылка</td>
+                    <td>Размер статьи</td>
+                    <td>Количество слов</td>
+                </tr>
+                <tr v-for="article in articles">
+                    <td>{{ article.title }}</td>
+                    <td>{{ article.link }}</td>
+                    <td>{{ article.size }}</td>
+                    <td>{{ article.wordCount }}</td>
+                </tr>
+            </table>
         </div>
     </div>
     <div v-if="searchShow">

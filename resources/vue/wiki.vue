@@ -6,14 +6,14 @@
     let importShow = ref(true);
     let searchShow = ref(false);
     let articleShow = ref(false);
+    let resultfind = ref(false);
 
     let article = ref({});
     let articles = ref({});
+    let result = ref({});
 
     let start = 1;
     let end = 10;
-
-
 
     async function init()
     {
@@ -67,13 +67,25 @@
             articleShow.value = true;
         }
     }
+
+    async function find(e)
+    {
+        e.preventDefault();
+        let response = await fetch("http://wiki/search", {
+            method: 'POST',
+            body: new FormData(e.currentTarget)
+        });
+        result.value = await response.json();
+        if (Object.keys(result).length !== 0) {
+            resultfind.value = true;
+        }
+    }
 </script>
 
 <template>
     <button @click="changeVisibility">Import</button>
     <button @click="changeVisibility">Search</button>
     <div v-if="importShow">
-        <p>{{ "import" }}</p>
         <form action="/import" method="post" @submit="send">
             <input type="hidden" name="_token" :value="props.csrfToken">
             <input type="text" name="title" placeholder="ключевое слово">
@@ -107,7 +119,16 @@
         </div>
     </div>
     <div v-if="searchShow">
-        <p>{{ "search" }}</p>
+        <form action="/search" method="post" @submit="find">
+            <input type="hidden" name="_token" :value="props.csrfToken">
+            <input type="text" name="keyword" placeholder="ключевое слово">
+            <button type="submit">Найти</button>
+        </form>
+        <div v-if="resultfind">
+            <ul v-for="res in result">
+                <li>{{ res.title + "(кол-во вхождений: " + res.numberOfOccurrences + ")"}}</li>
+            </ul>
+        </div>
     </div>
 </template>
 

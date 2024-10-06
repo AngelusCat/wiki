@@ -50,14 +50,19 @@ class Article
             "ю́" => "ю",
             "Я́" => "Я",
             "я́" => "я",
-            "Ё" => "Е",
-            "ё" => "е"
+//            "Ё" => "Е",
+//            "ё" => "е"
         ];
         return strtr($content, $replacementArray);
     }
     public function getTitle(): string
     {
         return $this->title;
+    }
+
+    public function getContent(): string
+    {
+        return $this->content;
     }
 
     public function getLink(): string
@@ -87,6 +92,10 @@ class Article
 
     public function getNumberOfOccurrencesOfWord(string $word): int
     {
+        if (!$this->numberOfOccurrences->has($word)) {
+            dd($this->numberOfOccurrences->has("всё"));
+            throw new \Exception("word $word");
+        }
         return $this->numberOfOccurrences->get($word);
     }
 

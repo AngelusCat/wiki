@@ -23,33 +23,6 @@ Route::get('/', function () {
 });
 
 Route::post('/import', [WikiParserController::class, 'import']);
+Route::post('/search', [WikiParserController::class, 'search']);
 
-Route::get('/articles/{start}/{end}', function (int $start, int $end) {
-    /**
-     * @var \App\Services\TDGs\Articles $tdg
-     */
-    $tdg = app(\App\Services\TDGs\Articles::class);
-    /**
-     * @var \App\Services\Factories\Article $f
-     */
-    $f = app(\App\Services\Factories\Article::class);
-    $articles = $tdg->getArticles($start, $end);
-
-    $articles1 = [];
-
-    foreach ($articles as $article) {
-        $articles1[] = $f->createByDB($article->id);
-    }
-
-    $response = [];
-
-    foreach ($articles1 as $article) {
-        $response[] = [
-            "title" => $article->getTitle(),
-            "link" => $article->getLink(),
-            "size" => $article->getSize(),
-            "wordCount" => $article->getWordCount()
-        ];
-    }
-    return response()->json($response);
-});
+Route::get('/articles/{start}/{end}', [WikiParserController::class, 'getArticlesByIds']);

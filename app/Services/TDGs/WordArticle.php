@@ -20,7 +20,7 @@ class WordArticle
 
     public function getArticleIdsByWordId(int $wordId): Collection
     {
-        return DB::table($this->tableName)->where("word_id", $wordId)->orderByDesc("number_of_occurrences")->pluck("article_id");
+        return DB::table($this->tableName)->where("word_id", "=", $wordId)->orderByDesc("number_of_occurrences")->pluck("article_id");
     }
 
     public function getWordIdsByArticleId(int $articleId): Collection

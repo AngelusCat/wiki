@@ -30,4 +30,14 @@ class Words
         $other = DB::table($this->tableName)->whereIn('word', $notYet)->get();
         return $alreadyThere->merge($other);
     }
+
+    public function getIdByWord(string $word): int
+    {
+        return DB::table($this->tableName)->where('word', $word)->value('id');
+    }
+
+    public function getWords(Collection $wordIds): Collection
+    {
+        return DB::table($this->tableName)->whereIn('id', $wordIds)->get(["word"]);
+    }
 }

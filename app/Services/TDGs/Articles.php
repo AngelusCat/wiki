@@ -2,6 +2,7 @@
 
 namespace App\Services\TDGs;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class Articles
@@ -13,5 +14,10 @@ class Articles
             "title" => $title,
             "content" => $content
         ]);
+    }
+
+    public function get(int $id)
+    {
+        return DB::table($this->tableName)->where("id", $id)->first();
     }
 }

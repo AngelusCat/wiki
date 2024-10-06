@@ -27,7 +27,6 @@ class Article
         $this->content = $this->removeAccents($content);
         $this->words = ($words->isEmpty()) ? $this->parseContentIntoWords() : $words;
         $this->numberOfOccurrences = $this->words->countBy();
-        dump($this->numberOfOccurrences);
     }
 
     private function removeAccents(string $content): string
@@ -94,6 +93,6 @@ class Article
     {
         $this->id = $this->articlesTdg->save($this->title, $this->content);
         $wordsIds = $this->wordsTdg->massSave($this->getUniqueWords());
-        $this->wordArticleTdg->save($this, $wordsIds);
+        $this->wordArticleTdg->massSave($this, $wordsIds);
     }
 }

@@ -2,8 +2,6 @@
 
 use App\Entities\Article;
 use App\Http\Controllers\WikiParserController;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*

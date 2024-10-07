@@ -136,7 +136,7 @@
         </form>
         <div v-if="searchResultShow">
             <ul v-for="article in searchResult">
-                <li>{{ article.title + "(кол-во вхождений: " + article.numberOfOccurrences + ")"}}</li>
+                <li>{{ article.title + " (кол-во вхождений: " + article.numberOfOccurrences + ")"}}</li>
             </ul>
         </div>
     </div>

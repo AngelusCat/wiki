@@ -23,8 +23,8 @@ class WordArticle
         return DB::table($this->tableName)->where("word_id", "=", $wordId)->orderByDesc("number_of_occurrences")->pluck("article_id");
     }
 
-    public function getWordIdsByArticleId(int $articleId): Collection
+    public function getWordIdsAndNumberOfOccurrencesByArticleId(int $articleId): Collection
     {
-        return DB::table($this->tableName)->where("article_id", $articleId)->pluck("word_id");
+        return DB::table($this->tableName)->where("article_id", $articleId)->get(["word_id", "number_of_occurrences"]);
     }
 }

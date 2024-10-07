@@ -151,12 +151,22 @@
             <p>Найдено статей: {{ searchResult.length }}</p>
             <ul v-for="article in searchResult">
                 <li @click="showContent(article.content)">{{ article.title + " (кол-во вхождений: " + article.numberOfOccurrences + ")"}}</li>
-                <div v-if="contentShow" @click="dontShowContent">{{ content }}</div>
             </ul>
+            <pre>
+                <article v-if="contentShow" @click="dontShowContent" class="content">{{ content }}</article>
+            </pre>
         </div>
     </div>
 </template>
 
 <style scoped>
-
+    .content {
+        position: fixed;
+        box-sizing: border-box;
+        width: 1250px;
+        height: 800px;
+        left: 600px;
+        bottom: 50px;
+        overflow: scroll;
+    }
 </style>

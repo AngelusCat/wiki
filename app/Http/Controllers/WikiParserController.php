@@ -92,13 +92,23 @@ class WikiParserController extends Controller
         ]);
         $keyWord = strtr($request->input('keyword'), ["Ё" => "Е", "ё" => "е"]);
         $articleIds = $this->wordArticleTdg->getArticleIdsByWordId($this->wordsTdg->getIdByWord($keyWord));
+
+        if ($articleIds->isEmpty()) {
+            return response()->json([
+                "message" => "not found"
+            ]);
+        }
+
         $articles = [];
         $response = [];
         foreach ($articleIds as $articleId) {
             $articles[] = $this->factory->createByDB($articleId);
         }
+
+        $response["message"] = "success";
+
         foreach ($articles as $article) {
-            $response[] = [
+            $response["data"][] = [
                 "title" => $article->getTitle(),
                 "numberOfOccurrences" => $article->getNumberOfOccurrencesOfWord($keyWord),
                 "content" => $article->getContent()

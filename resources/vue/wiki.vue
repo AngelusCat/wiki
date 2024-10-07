@@ -109,8 +109,14 @@
             method: 'POST',
             body: new FormData(e.currentTarget)
         });
-        searchResult.value = await response.json();
-        if (Object.keys(searchResult).length !== 0) {
+        let body = await response.json();
+        if (body.hasOwnProperty("message")) {
+            errorShow.value = true;
+            error.value = (body.message === "not found") ? "Ничего не найдено." : "";
+            searchResultShow.value = false;
+        }
+        if (body.message === "success") {
+            searchResult.value = body.data;
             searchResultShow.value = true;
         }
     }

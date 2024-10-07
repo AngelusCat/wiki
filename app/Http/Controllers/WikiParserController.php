@@ -66,7 +66,7 @@ class WikiParserController extends Controller
     public function search(Request $request)
     {
         //validation
-        $keyWord = $request->input('keyword');
+        $keyWord = strtr($request->input('keyword'), ["Ё" => "Е", "ё" => "е"]);
         $articleIds = $this->wordArticleTdg->getArticleIdsByWordId($this->wordsTdg->getIdByWord($keyWord));
         $articles = [];
         $response = [];

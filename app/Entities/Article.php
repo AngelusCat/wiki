@@ -50,8 +50,8 @@ class Article
             "ю́" => "ю",
             "Я́" => "Я",
             "я́" => "я",
-//            "Ё" => "Е",
-//            "ё" => "е"
+            "Ё" => "Е",
+            "ё" => "е"
         ];
         return strtr($content, $replacementArray);
     }
@@ -92,10 +92,6 @@ class Article
 
     public function getNumberOfOccurrencesOfWord(string $word): int
     {
-        if (!$this->numberOfOccurrences->has($word)) {
-            dd($this->numberOfOccurrences->has("всё"));
-            throw new \Exception("word $word");
-        }
         return $this->numberOfOccurrences->get($word);
     }
 

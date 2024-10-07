@@ -12,9 +12,24 @@ class Article
     public function createByDB(int $articleId): \App\Entities\Article
     {
         $articleData = $this->articlesTdg->get($articleId);
-        $words = $this->wordsTdg->getWords($this->wordArticleTdg->getWordIdsByArticleId($articleId))->map(function ($item) {
+        $wordsData = $this->wordArticleTdg->getWordIdsAndNumberOfOccurrencesByArticleId($articleId);
+        $wordsIds = $wordsData->map(function ($item) {
+            return $item->word_id;
+        });
+        $directlyWords = $this->wordsTdg->getWords($wordsIds)->map(function ($item) {
             return $item->word;
         });
-        return new \App\Entities\Article($articleData->title, $articleData->content, $words);
+        $numberOfOccurrences = $wordsData->map(function ($item) {
+            return $item->number_of_occurrences;
+        });
+
+        $words = [];
+
+        foreach ($directlyWords->combine($numberOfOccurrences) as $word => $number) {
+            for ($i = 1; $i <= $number; $i++) {
+                $words[] = $word;
+            }
+        }
+        return new \App\Entities\Article($articleData->title, $articleData->content, collect($words));
     }
 }

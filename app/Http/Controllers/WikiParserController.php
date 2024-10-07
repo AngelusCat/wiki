@@ -63,7 +63,7 @@ class WikiParserController extends Controller
         return response()->json($response);
     }
 
-    public function search(Request $request)
+    public function search(Request $request): JsonResponse
     {
         //validation
         $keyWord = strtr($request->input('keyword'), ["Ё" => "Е", "ё" => "е"]);

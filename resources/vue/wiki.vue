@@ -66,7 +66,7 @@
 
     function showContent(articleContent)
     {
-        contentShow.value = true;
+        contentShow.value = !contentShow.value;
         content.value = articleContent;
     }
 
@@ -148,6 +148,7 @@
             <button type="submit">Найти</button>
         </form>
         <div v-if="searchResultShow">
+            <p>Найдено статей: {{ searchResult.length }}</p>
             <ul v-for="article in searchResult">
                 <li @click="showContent(article.content)">{{ article.title + " (кол-во вхождений: " + article.numberOfOccurrences + ")"}}</li>
                 <div v-if="contentShow" @click="dontShowContent">{{ content }}</div>

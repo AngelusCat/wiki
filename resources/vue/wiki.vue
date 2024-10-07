@@ -8,6 +8,7 @@
     let articleShow = ref(false);
     let searchResultShow = ref(false);
     let contentShow = ref(false);
+    let articleNotFound = ref(false);
 
     let article = ref({});
     let articles = ref({});
@@ -78,12 +79,17 @@
     async function send(e)
     {
         e.preventDefault();
+        articleNotFound.value = false;
         let response = await fetch("http://wiki/import", {
             method: 'POST',
             body: new FormData(e.currentTarget)
         });
-        article.value = await response.json();
-        if (Object.keys(article).length !== 0) {
+        let body = await response.json();
+        article.value = body;
+        if (body.length === 0) {
+            articleNotFound.value = true;
+        }
+        if (Object.keys(article).length !== 0 && body.length !== 0) {
             articleShow.value = true;
             if (Object.keys(articles.value).length === 0 || endArticleId <= 10) {
                 await init();
@@ -111,10 +117,11 @@
     <div v-if="importShow">
         <form action="/import" method="post" @submit="send">
             <input type="hidden" name="_token" :value="props.csrfToken">
-            <input type="text" name="title" placeholder="ключевое слово">
+            <input type="text" name="title" placeholder="ключевое слово" required>
             <button type="submit">Скопировать</button>
             <button type="reset">Очистить</button>
         </form>
+        <p v-if="articleNotFound">Статья не найдена.</p>
         <div v-if="articleShow">
             <p>Импорт завершен.</p>
             <p>Найдена статья по адресу: {{ article.link }}</p>
@@ -144,7 +151,7 @@
     <div v-if="searchShow">
         <form action="/search" method="post" @submit="find">
             <input type="hidden" name="_token" :value="props.csrfToken">
-            <input type="text" name="keyword" placeholder="ключевое слово">
+            <input type="text" name="keyword" placeholder="ключевое слово" required>
             <button type="submit">Найти</button>
         </form>
         <div v-if="searchResultShow">

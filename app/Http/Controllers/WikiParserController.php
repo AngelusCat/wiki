@@ -10,18 +10,25 @@ use App\Services\TDGs\Words;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class WikiParserController extends Controller
 {
     public function __construct(private MediaWikiAPI $api, private Articles $articlesTdg, private Words $wordsTdg, private WordArticle $wordArticleTdg, private \App\Services\Factories\Article $factory){}
-    public function import(Request $request)
+
+    /**
+     * @throws ValidationException
+     */
+    public function import(Request $request): JsonResponse
     {
-        //validation
+        $this->validate($request, [
+            "title" => "required|string",
+        ]);
         $start = microtime(true);
         $title = $request->input('title');
         $content = $this->api->getPlainTextOfArticle($title);
         if ($content === null) {
-            //
+            return response()->json([]);
         }
         $article = new Article($title, $content);
         try {
@@ -63,9 +70,14 @@ class WikiParserController extends Controller
         return response()->json($response);
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function search(Request $request): JsonResponse
     {
-        //validation
+        $this->validate($request, [
+            "keyword" => "required|string",
+        ]);
         $keyWord = strtr($request->input('keyword'), ["Ё" => "Е", "ё" => "е"]);
         $articleIds = $this->wordArticleTdg->getArticleIdsByWordId($this->wordsTdg->getIdByWord($keyWord));
         $articles = [];

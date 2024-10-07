@@ -65,6 +65,9 @@
         article.value = await response.json();
         if (Object.keys(article).length !== 0) {
             articleShow.value = true;
+            if (Object.keys(articles.value).length === 0) {
+                await init();
+            }
         }
     }
 

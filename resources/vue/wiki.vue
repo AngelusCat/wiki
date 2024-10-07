@@ -6,32 +6,41 @@
     let importShow = ref(true);
     let searchShow = ref(false);
     let articleShow = ref(false);
-    let resultfind = ref(false);
+    let searchResultShow = ref(false);
 
     let article = ref({});
     let articles = ref({});
-    let result = ref({});
+    let searchResult = ref({});
 
-    let start = 1;
-    let end = 10;
+    let startArticleId = 1;
+    let endArticleId = 10;
 
     async function init()
     {
-        let response = await fetch("http://wiki/articles/" + start + "/" + end);
+        let response = await fetch("http://wiki/articles/" + startArticleId + "/" + endArticleId);
         articles.value = await response.json();
     }
     init();
 
+    function add()
+    {
+        startArticleId = endArticleId + 1;
+        endArticleId = endArticleId + 10;
+    }
+
+    function reduce()
+    {
+        endArticleId = endArticleId - 10;
+        startArticleId = endArticleId - 9;
+    }
+
     async function nextPage()
     {
-        start = end + 1;
-        end = end + 10;
-        let response = await fetch("http://wiki/articles/" + start + "/" + end);
-
+        add();
+        let response = await fetch("http://wiki/articles/" + startArticleId + "/" + endArticleId);
         let body = await response.json();
         if (body.length === 0) {
-            end = end - 10;
-            start = end - 9;
+            reduce();
         } else {
             articles.value = body;
         }
@@ -39,13 +48,11 @@
 
     async function lastPage()
     {
-        end = end - 10;
-        start = end - 9;
-        if (start <= 0) {
-            start = end + 1;
-            end = end + 10;
+        reduce();
+        if (startArticleId <= 0) {
+            add();
         }
-        let response = await fetch("http://wiki/articles/" + start + "/" + end);
+        let response = await fetch("http://wiki/articles/" + startArticleId + "/" + endArticleId);
         articles.value = await response.json();
     }
 
@@ -65,7 +72,7 @@
         article.value = await response.json();
         if (Object.keys(article).length !== 0) {
             articleShow.value = true;
-            if (Object.keys(articles.value).length === 0 || end <= 10) {
+            if (Object.keys(articles.value).length === 0 || endArticleId <= 10) {
                 await init();
             }
         }
@@ -78,9 +85,9 @@
             method: 'POST',
             body: new FormData(e.currentTarget)
         });
-        result.value = await response.json();
-        if (Object.keys(result).length !== 0) {
-            resultfind.value = true;
+        searchResult.value = await response.json();
+        if (Object.keys(searchResult).length !== 0) {
+            searchResultShow.value = true;
         }
     }
 </script>
@@ -127,9 +134,9 @@
             <input type="text" name="keyword" placeholder="ключевое слово">
             <button type="submit">Найти</button>
         </form>
-        <div v-if="resultfind">
-            <ul v-for="res in result">
-                <li>{{ res.title + "(кол-во вхождений: " + res.numberOfOccurrences + ")"}}</li>
+        <div v-if="searchResultShow">
+            <ul v-for="article in searchResult">
+                <li>{{ article.title + "(кол-во вхождений: " + article.numberOfOccurrences + ")"}}</li>
             </ul>
         </div>
     </div>

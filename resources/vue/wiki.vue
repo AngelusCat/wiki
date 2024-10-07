@@ -7,10 +7,12 @@
     let searchShow = ref(false);
     let articleShow = ref(false);
     let searchResultShow = ref(false);
+    let contentShow = ref(false);
 
     let article = ref({});
     let articles = ref({});
     let searchResult = ref({});
+    let content = ref("");
 
     let startArticleId = 1;
     let endArticleId = 10;
@@ -60,6 +62,17 @@
     {
         importShow.value = !importShow.value;
         searchShow.value = !searchShow.value;
+    }
+
+    function showContent(articleContent)
+    {
+        contentShow.value = true;
+        content.value = articleContent;
+    }
+
+    function dontShowContent()
+    {
+        contentShow.value = false;
     }
 
     async function send(e)
@@ -136,7 +149,8 @@
         </form>
         <div v-if="searchResultShow">
             <ul v-for="article in searchResult">
-                <li>{{ article.title + " (кол-во вхождений: " + article.numberOfOccurrences + ")"}}</li>
+                <li @click="showContent(article.content)">{{ article.title + " (кол-во вхождений: " + article.numberOfOccurrences + ")"}}</li>
+                <div v-if="contentShow" @click="dontShowContent">{{ content }}</div>
             </ul>
         </div>
     </div>

@@ -24,12 +24,12 @@ class Article
         $this->wordsTdg = app(\App\Services\TDGs\Words::class);
         $this->wordArticleTdg = app(\App\Services\TDGs\WordArticle::class);
         $this->title = $title;
-        $this->content = $this->removeAccents($content);
+        $this->content = $this->replaceInconvenientCharacters($content);
         $this->words = ($words->isEmpty()) ? $this->parseContentIntoWords() : $words;
         $this->numberOfOccurrences = $this->words->countBy();
     }
 
-    private function removeAccents(string $content): string
+    private function replaceInconvenientCharacters(string $content): string
     {
         $replacementArray = [
             "А́" => "А",
@@ -99,6 +99,11 @@ class Article
     {
         return $this->id;
     }
+
+    /**
+     * Сохраняет в БД статью, слова-атомы, отношения между ними.
+     * @return void
+     */
 
     public function save(): void
     {

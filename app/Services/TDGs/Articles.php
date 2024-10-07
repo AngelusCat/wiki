@@ -16,10 +16,21 @@ class Articles
         ]);
     }
 
-    public function get(int $id)
+    /**
+     * @param int $id id статьи из БД.
+     * @return object|null stdClass с данными для Article.
+     */
+    public function get(int $id): ?object
     {
         return DB::table($this->tableName)->where("id", $id)->first();
     }
+
+    /**
+     * Возвращает коллекцию stdClass с данными для Article, где article.id находится в промежутке между startId и endId.
+     * @param int $startId
+     * @param int $endId
+     * @return Collection
+     */
 
     public function getArticles(int $startId, int $endId): Collection
     {

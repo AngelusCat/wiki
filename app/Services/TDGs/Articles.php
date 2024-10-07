@@ -20,4 +20,9 @@ class Articles
     {
         return DB::table($this->tableName)->where("id", $id)->first();
     }
+
+    public function getArticles(int $startId, int $endId): Collection
+    {
+        return DB::table($this->tableName)->whereBetween("id", [$startId, $endId])->get();
+    }
 }

@@ -60,6 +60,11 @@ class Article
         return $this->title;
     }
 
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
     public function getLink(): string
     {
         return "https://ru.wikipedia.org/wiki/" . $this->title;

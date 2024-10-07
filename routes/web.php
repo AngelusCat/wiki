@@ -23,3 +23,6 @@ Route::get('/', function () {
 });
 
 Route::post('/import', [WikiParserController::class, 'import']);
+Route::post('/search', [WikiParserController::class, 'search']);
+
+Route::get('/articles/{start}/{end}', [WikiParserController::class, 'getArticlesByIds']);

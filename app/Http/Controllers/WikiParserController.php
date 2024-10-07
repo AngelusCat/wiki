@@ -91,13 +91,15 @@ class WikiParserController extends Controller
             "keyword" => "required|string",
         ]);
         $keyWord = strtr($request->input('keyword'), ["Ё" => "Е", "ё" => "е"]);
-        $articleIds = $this->wordArticleTdg->getArticleIdsByWordId($this->wordsTdg->getIdByWord($keyWord));
+        $wordsIds = $this->wordsTdg->getIdByWord($keyWord);
 
-        if ($articleIds->isEmpty()) {
+        if ($wordsIds === null) {
             return response()->json([
                 "message" => "not found"
             ]);
         }
+
+        $articleIds = $this->wordArticleTdg->getArticleIdsByWordId($wordsIds);
 
         $articles = [];
         $response = [];

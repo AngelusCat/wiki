@@ -8,12 +8,13 @@
     let articleShow = ref(false);
     let searchResultShow = ref(false);
     let contentShow = ref(false);
-    let articleNotFound = ref(false);
+    let errorShow = ref(false);
 
     let article = ref({});
     let articles = ref({});
     let searchResult = ref({});
     let content = ref("");
+    let error = ref("");
 
     let startArticleId = 1;
     let endArticleId = 10;
@@ -79,17 +80,20 @@
     async function send(e)
     {
         e.preventDefault();
-        articleNotFound.value = false;
+        errorShow.value = false;
         let response = await fetch("http://wiki/import", {
             method: 'POST',
             body: new FormData(e.currentTarget)
         });
         let body = await response.json();
-        article.value = body;
-        if (body.length === 0) {
-            articleNotFound.value = true;
+        if (body.hasOwnProperty("message")) {
+            if (body.message === "already copied" || body.message === "not found") {
+                errorShow.value = true;
+                error.value = (body.message === "already copied") ? "Статья уже скопирована." : ((body.message === "not found") ? "Статья не найдена на wikipedia." : "");
+            }
         }
-        if (Object.keys(article).length !== 0 && body.length !== 0) {
+        article.value = body;
+        if (article.value.hasOwnProperty("title")) {
             articleShow.value = true;
             if (Object.keys(articles.value).length === 0 || endArticleId <= 10) {
                 await init();
@@ -121,7 +125,7 @@
             <button type="submit">Скопировать</button>
             <button type="reset">Очистить</button>
         </form>
-        <p v-if="articleNotFound">Статья не найдена.</p>
+        <p v-if="errorShow">{{ error }}</p>
         <div v-if="articleShow">
             <p>Импорт завершен.</p>
             <p>Найдена статья по адресу: {{ article.link }}</p>

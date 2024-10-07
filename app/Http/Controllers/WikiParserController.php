@@ -28,12 +28,16 @@ class WikiParserController extends Controller
         $title = $request->input('title');
 
         if ($this->articlesTdg->articleHasAlreadyBeenCopied($title)) {
-            return response()->json([]);
+            return response()->json([
+                "message" => "already copied"
+            ]);
         }
 
         $content = $this->api->getPlainTextOfArticle($title);
         if ($content === null) {
-            return response()->json([]);
+            return response()->json([
+                "message" => "not found"
+            ]);
         }
         $article = new Article($title, $content);
         try {
@@ -48,11 +52,14 @@ class WikiParserController extends Controller
         $processingTime = round(microtime(true) - $start, 4);
 
         return response()->json([
-            "title" => $article->getTitle(),
-            "link" => $article->getLink(),
-            "size" => $article->getSize(),
-            "wordCount" => $article->getWordCount(),
-            "processingTime" => $processingTime
+            "message" => "success",
+            "data" => [
+                "title" => $article->getTitle(),
+                "link" => $article->getLink(),
+                "size" => $article->getSize(),
+                "wordCount" => $article->getWordCount(),
+                "processingTime" => $processingTime
+            ]
         ]);
     }
 

@@ -90,10 +90,11 @@
             if (body.message === "already copied" || body.message === "not found") {
                 errorShow.value = true;
                 error.value = (body.message === "already copied") ? "Статья уже скопирована." : ((body.message === "not found") ? "Статья не найдена на wikipedia." : "");
+                articleShow.value = false;
             }
         }
-        article.value = body;
-        if (article.value.hasOwnProperty("title")) {
+        if (body.message === "success") {
+            article.value = body.data;
             articleShow.value = true;
             if (Object.keys(articles.value).length === 0 || endArticleId <= 10) {
                 await init();

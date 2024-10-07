@@ -34,7 +34,7 @@ class Words
         return $alreadyThere->merge($other);
     }
 
-    public function getIdByWord(string $word): int
+    public function getIdByWord(string $word): ?int
     {
         return DB::table($this->tableName)->where('word', $word)->value('id');
     }

@@ -28,12 +28,16 @@ class WikiParserController extends Controller
         $title = $request->input('title');
 
         if ($this->articlesTdg->articleHasAlreadyBeenCopied($title)) {
-            return response()->json([]);
+            return response()->json([
+                "message" => "already copied"
+            ]);
         }
 
         $content = $this->api->getPlainTextOfArticle($title);
         if ($content === null) {
-            return response()->json([]);
+            return response()->json([
+                "message" => "not found"
+            ]);
         }
         $article = new Article($title, $content);
         try {
@@ -48,11 +52,14 @@ class WikiParserController extends Controller
         $processingTime = round(microtime(true) - $start, 4);
 
         return response()->json([
-            "title" => $article->getTitle(),
-            "link" => $article->getLink(),
-            "size" => $article->getSize(),
-            "wordCount" => $article->getWordCount(),
-            "processingTime" => $processingTime
+            "message" => "success",
+            "data" => [
+                "title" => $article->getTitle(),
+                "link" => $article->getLink(),
+                "size" => $article->getSize(),
+                "wordCount" => $article->getWordCount(),
+                "processingTime" => $processingTime
+            ]
         ]);
     }
 
@@ -84,14 +91,26 @@ class WikiParserController extends Controller
             "keyword" => "required|string",
         ]);
         $keyWord = strtr($request->input('keyword'), ["Ё" => "Е", "ё" => "е"]);
-        $articleIds = $this->wordArticleTdg->getArticleIdsByWordId($this->wordsTdg->getIdByWord($keyWord));
+        $wordsIds = $this->wordsTdg->getIdByWord($keyWord);
+
+        if ($wordsIds === null) {
+            return response()->json([
+                "message" => "not found"
+            ]);
+        }
+
+        $articleIds = $this->wordArticleTdg->getArticleIdsByWordId($wordsIds);
+
         $articles = [];
         $response = [];
         foreach ($articleIds as $articleId) {
             $articles[] = $this->factory->createByDB($articleId);
         }
+
+        $response["message"] = "success";
+
         foreach ($articles as $article) {
-            $response[] = [
+            $response["data"][] = [
                 "title" => $article->getTitle(),
                 "numberOfOccurrences" => $article->getNumberOfOccurrencesOfWord($keyWord),
                 "content" => $article->getContent()

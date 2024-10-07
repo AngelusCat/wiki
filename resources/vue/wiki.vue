@@ -7,13 +7,16 @@
     let searchShow = ref(false);
     let articleShow = ref(false);
     let searchResultShow = ref(false);
+    let errorFindShow = ref(false);
     let contentShow = ref(false);
-    let articleNotFound = ref(false);
+    let errorSendShow = ref(false);
 
     let article = ref({});
     let articles = ref({});
     let searchResult = ref({});
     let content = ref("");
+    let errorSend = ref("");
+    let errorFind = ref("");
 
     let startArticleId = 1;
     let endArticleId = 10;
@@ -79,17 +82,21 @@
     async function send(e)
     {
         e.preventDefault();
-        articleNotFound.value = false;
+        errorSendShow.value = false;
         let response = await fetch("http://wiki/import", {
             method: 'POST',
             body: new FormData(e.currentTarget)
         });
         let body = await response.json();
-        article.value = body;
-        if (body.length === 0) {
-            articleNotFound.value = true;
+        if (body.hasOwnProperty("message")) {
+            if (body.message === "already copied" || body.message === "not found") {
+                errorSendShow.value = true;
+                errorSend.value = (body.message === "already copied") ? "Статья уже скопирована." : ((body.message === "not found") ? "Статья не найдена на wikipedia." : "");
+                articleShow.value = false;
+            }
         }
-        if (Object.keys(article).length !== 0 && body.length !== 0) {
+        if (body.message === "success") {
+            article.value = body.data;
             articleShow.value = true;
             if (Object.keys(articles.value).length === 0 || endArticleId <= 10) {
                 await init();
@@ -100,12 +107,19 @@
     async function find(e)
     {
         e.preventDefault();
+        errorFindShow.value = false;
         let response = await fetch("http://wiki/search", {
             method: 'POST',
             body: new FormData(e.currentTarget)
         });
-        searchResult.value = await response.json();
-        if (Object.keys(searchResult).length !== 0) {
+        let body = await response.json();
+        if (body.hasOwnProperty("message") && body.message === "not found") {
+            errorFindShow.value = true;
+            errorFind.value = (body.message === "not found") ? "Ничего не найдено." : "";
+            searchResultShow.value = false;
+        }
+        if (body.message === "success") {
+            searchResult.value = body.data;
             searchResultShow.value = true;
         }
     }
@@ -121,7 +135,7 @@
             <button type="submit">Скопировать</button>
             <button type="reset">Очистить</button>
         </form>
-        <p v-if="articleNotFound">Статья не найдена.</p>
+        <p v-if="errorSendShow">{{ errorSend }}</p>
         <div v-if="articleShow">
             <p>Импорт завершен.</p>
             <p>Найдена статья по адресу: {{ article.link }}</p>
@@ -154,6 +168,7 @@
             <input type="text" name="keyword" placeholder="ключевое слово" required>
             <button type="submit">Найти</button>
         </form>
+        <p v-if="errorFindShow">{{ errorFind }}</p>
         <div v-if="searchResultShow">
             <p>Найдено статей: {{ searchResult.length }}</p>
             <ul v-for="article in searchResult">
@@ -175,5 +190,7 @@
         left: 600px;
         bottom: 50px;
         overflow: scroll;
+        border: #1a202c solid 1px;
+        padding: 10px;
     }
 </style>

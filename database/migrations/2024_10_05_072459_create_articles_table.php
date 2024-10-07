@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->mediumText('content');
+            $table->engine('InnoDB');
+            $table->charset('utf8mb4');
+            $table->collation('utf8mb4_unicode_ci');
         });
     }
 

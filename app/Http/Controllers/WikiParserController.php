@@ -21,11 +21,16 @@ class WikiParserController extends Controller
      */
     public function import(Request $request): JsonResponse
     {
+        $start = microtime(true);
         $this->validate($request, [
             "title" => "required|string",
         ]);
-        $start = microtime(true);
         $title = $request->input('title');
+
+        if ($this->articlesTdg->articleHasAlreadyBeenCopied($title)) {
+            return response()->json([]);
+        }
+
         $content = $this->api->getPlainTextOfArticle($title);
         if ($content === null) {
             return response()->json([]);

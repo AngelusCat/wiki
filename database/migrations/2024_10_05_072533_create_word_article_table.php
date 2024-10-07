@@ -16,6 +16,9 @@ return new class extends Migration
             $table->foreignId("word_id")->references("id")->on("words");
             $table->primary(["article_id", "word_id"]);
             $table->unsignedSmallInteger("number_of_occurrences");
+            $table->engine('InnoDB');
+            $table->charset('utf8mb4');
+            $table->collation('utf8mb4_unicode_ci');
         });
     }
 

@@ -25,4 +25,9 @@ class Articles
     {
         return DB::table($this->tableName)->whereBetween("id", [$startId, $endId])->get();
     }
+
+    public function articleHasAlreadyBeenCopied(string $title): bool
+    {
+        return DB::table($this->tableName)->where("title", "=", $title)->exists();
+    }
 }
